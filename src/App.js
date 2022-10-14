@@ -1,6 +1,7 @@
-import logo from "./logo.svg";
 import { useState } from "react";
 import "./App.css";
+import Task from "./Task";
+
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -11,19 +12,29 @@ function App() {
   };
 
   const addTask = () => {
-    setTodoList([...todoList, newTask]);
+    const task = {
+      id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
+      taskName: newTask,
+      completed: false
+    }
+    setTodoList([...todoList, task]);
   };
 
-  const deleteTask = (taskName) => {
-    const newTodoList = todoList.filter((task)=>{
-      if(task === taskName){
-        return false;
-      } else {
-        return true;
-      }
-    });
-    setTodoList(newTodoList);
-  }
+  const deleteTask = (id) => {
+    setTodoList(todoList.filter((task)=> task.id !== id));
+  };
+
+  const completeTask = (id) => {
+    setTodoList(
+      todoList.map((task)=> {
+        if (task.id === id){
+          return {...task,completed:true};
+        }else{
+          return task;
+        }
+      })
+    );
+  };
 
   return (
     <div className="App">
@@ -33,12 +44,8 @@ function App() {
       </div>
       <div className="list">
         {todoList.map((task) => {
-          return(
-            <div>
-            <h1>{task}</h1>
-            <button onClick={()=>deleteTask(task)}>Delete</button>
-          </div>
-          );
+          return <Task taskName={task.taskName} id={task.id} deleteTask={deleteTask} 
+          completed={task.completed} completeTask={completeTask} />;
         })}
       </div>
     </div>
